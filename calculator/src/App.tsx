@@ -3,27 +3,48 @@ import { useState } from 'react';
 import { Button, Col, Container, Row } from 'react-bootstrap';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Form from 'react-bootstrap/Form';
+import { getAnsw } from './Services/calculator';
 function App() {
   
     const [displayValue, setDisplayValue] = useState<string>('');
-  
-    const handleButtonClick = (button) => {
-     
-      if (button === '=') {
-        try {
-          // Вычисление выражения
-          const result = eval(displayValue);
-          setDisplayValue(result.toString());
-        } catch (error) {
-          setDisplayValue('Ошибка');
-        }
+    const [answ, setAnsw] = useState<string>('');
+    const [spanValue, setSpanValue] = useState<string>('');
+    
+    const handleEqualClick = async () =>{
+      try {
+        // Отправка AJAX-запроса на сервер
+        getAnsw(displayValue)
+        .then(data => {
+          setAnsw(data);
+          setSpanValue(displayValue+'='+answ);
+        })
+        .catch(error => {
+          console.log('Ошибка при отправке запроса:', error);
+          setSpanValue('Ошибка при отправке запроса');
+        });
+      } catch (error) {
+        setSpanValue('Ошибка сервера');
       }
-      else if (button === 'C'){
+    }
+  
 
+    const handleButtonClick = (button) => {
+      if (button === 'C'){
+        setDisplayValue(displayValue.slice(0,-1));
       } 
       else if (button === 'CE'){
         setDisplayValue("");
       }
+      else if(button==='+'|| button==='-'||button==='√'||button==='^'||button==='×'||button==='/'){
+        if ("/-×+√^".includes(displayValue.slice(displayValue.length-1,displayValue.length))){
+        }
+        else if(displayValue==='' && button ==="-"){//не работает
+          setDisplayValue(displayValue + "("+button);
+        }
+        else{
+              setDisplayValue(displayValue + button);
+       }
+       }
       else  {
         // Добавление символа в строку выражения
         setDisplayValue(displayValue + button);
@@ -35,6 +56,7 @@ function App() {
   ];
 
   return (
+    
     <Container className="d-flex flex-column align-items-center justify-content-center vh-100">
     <Row className="mb-3" style={{ width: '233px' }}>
       {buttons.map((button, i) => (
@@ -48,14 +70,12 @@ function App() {
               width: '51px',
               height: '35px',
               transition: 'background-color 0.2s ease-in-out',
-              // Стили для текста внутри кнопки
               fontFamily: 'Martian Mono', 
               fontSize: '16px',
-              color: 'white', // Цвет текста в обычном состоянии
-              // Добавляем display: flex и justify-content: center для центрирования текста
+              color: 'white',
               display: 'flex', 
               justifyContent: 'center', 
-              alignItems: 'center' // Для вертикального центрирования
+              alignItems: 'center' 
             }}
             onMouseEnter={(e) => (e.target.style.backgroundColor = '#BBBBD9')} 
             onMouseLeave={(e) => (e.target.style.backgroundColor = '#9B9CBF')}
@@ -106,6 +126,7 @@ function App() {
             onMouseLeave={(e) => (e.target.style.backgroundColor = '#9B9CBF')}
             onMouseDown={(e) => (e.target.style.backgroundColor = '#595A7D')}
             onMouseUp={(e) => (e.target.style.backgroundColor = '#BBBBD9')}
+            onClick={() => handleEqualClick()}
           >
             {'='}
           </Button>
@@ -126,11 +147,12 @@ function App() {
             }}
           >
             
-            <span> {} </span>
+            <span>{spanValue} </span>
           </div>
         </Col>
       </Row>
     </Container>
+   
   );
 };
 
