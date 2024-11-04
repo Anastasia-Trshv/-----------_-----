@@ -29,25 +29,31 @@ function App() {
   
 
     const handleButtonClick = (button) => {
-      if (button === 'C'){
-        setDisplayValue(displayValue.slice(0,-1));
-      } 
-      else if (button === 'CE'){
-        setDisplayValue("");
-      }
-      else if(button==='+'|| button==='-'||button==='√'||button==='^'||button==='×'||button==='/'){
-        if ("/-×+√^".includes(displayValue.slice(displayValue.length-1,displayValue.length))){
-        }
-        else if(displayValue==='' && button ==="-"){//не работает
-          setDisplayValue(displayValue + "("+button);
-        }
-        else{
-              setDisplayValue(displayValue + button);
-       }
-       }
-      else  {
-        // Добавление символа в строку выражения
-        setDisplayValue(displayValue + button);
+      switch (button) {
+        case 'C':
+          setDisplayValue(displayValue.slice(0, -1));
+          break;
+        case 'CE':
+          setDisplayValue("");
+          break;
+        case '+':
+        case '-':
+        case '√':
+        case '^':
+        case '×':
+        case '/':
+          if ("/-×+√^".includes(displayValue.slice(displayValue.length - 1, displayValue.length))) {
+            break; // Do nothing if the last character is already an operator
+          } else if (displayValue === '' && button === "-") {
+            // Special case for negative sign at the beginning
+            setDisplayValue(displayValue + "(" + button);
+          } else {
+            setDisplayValue(displayValue + button);
+          }
+          break;
+        default:
+          // Default case: Add the button to the display value
+          setDisplayValue(displayValue + button);
       }
     };
   const buttons = [
