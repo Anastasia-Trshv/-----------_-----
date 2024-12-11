@@ -11,31 +11,25 @@ function App() {
     const [spanValue, setSpanValue] = useState<string>('');//значения поля под полем ввода
     const [leftBraketCounter, setLeftBraketCounter] = useState(0);//счетчик скобок
     
-    const handleEqualClick = async () =>{
-      if (leftBraketCounter>0){
+    const handleEqualClick = async () => {
+      if (leftBraketCounter > 0) {
         setSpanValue('Не все левые скобки закрыты');
       }
-      else if(leftBraketCounter<0){
+      else if (leftBraketCounter < 0) {
         setSpanValue('Не все правые скобки закрыты');
       }
-      else
-      {
+      else {
         try {
-        // Отправка AJAX-запроса на сервер
-        getAnsw(displayValue)
-        .then(data => {
+          // Отправка AJAX-запроса на сервер
+          const answ = await getAnsw(displayValue);
           setSpanValue("");
-          setAnsw(data);
-          setSpanValue(displayValue+'='+answ);
-        })
-        .catch(error => {
-          console.log('Ошибка при отправке запроса:', error);
-          setSpanValue('Ошибка при отправке запроса');
-        });
-      } catch (error) {
-        setSpanValue('Ошибка сервера');
-      }}
-    }
+          setAnsw(answ);
+          setSpanValue(displayValue + '=' + answ);
+        } catch (error) {
+          setSpanValue('Ошибка');
+        }
+      }
+    };
   
 
     const handleButtonClick = (button) => {
