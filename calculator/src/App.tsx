@@ -12,8 +12,11 @@ function App() {
     const [leftBraketCounter, setLeftBraketCounter] = useState(0);//счетчик скобок
     
     const handleEqualClick = async () =>{
-      if (leftBraketCounter!=0){
-        setSpanValue('Не все скобки закрыты');
+      if (leftBraketCounter>0){
+        setSpanValue('Не все левые скобки закрыты');
+      }
+      else if(leftBraketCounter<0){
+        setSpanValue('Не все правые скобки закрыты');
       }
       else
       {
@@ -21,6 +24,7 @@ function App() {
         // Отправка AJAX-запроса на сервер
         getAnsw(displayValue)
         .then(data => {
+          setSpanValue("");
           setAnsw(data);
           setSpanValue(displayValue+'='+answ);
         })
@@ -54,7 +58,7 @@ function App() {
           setLeftBraketCounter(0);
           break;
         case '-':  
-          if(displayValue === '' ||"/-×+√^".includes(displayValue.slice(displayValue.length - 1, displayValue.length)))
+          if(displayValue === '' ||"/-×+sqrt^".includes(displayValue.slice(displayValue.length - 1, displayValue.length)))
           {
             setDisplayValue(displayValue + "(" + button);
             setLeftBraketCounter(leftBraketCounter+1);
@@ -64,11 +68,10 @@ function App() {
           {setDisplayValue(displayValue + button);}
           break;
         case '+':
-        case '√':
         case '^':
         case '×':
         case '/':
-          if ("/-×+√^".includes(displayValue.slice(displayValue.length - 1, displayValue.length)))
+          if ("/-×+sqrt^".includes(displayValue.slice(displayValue.length - 1, displayValue.length)))
           { 
              break; // Do nothing if the last character is already an operator
           }  
@@ -88,15 +91,21 @@ function App() {
          if (displayValue.slice(displayValue.length - 1, displayValue.length)==="("){}
          else {
           setDisplayValue(displayValue + button);
-          
           setLeftBraketCounter(leftBraketCounter-1);
         }
-
+          break;
+        case "sin":
+        case "cos":
+        case "tg":
+        case "ctg":
+        case 'sqrt':
+          if (displayValue.slice(displayValue.length - 1, displayValue.length)===")"){ }
+         else {
+          setDisplayValue(displayValue  + button+ "(");
+          setLeftBraketCounter(leftBraketCounter+1);
+         }
          break;       
               
-             
-      
-          
             
         default:
           // Default case: Add the button to the display value
@@ -105,7 +114,7 @@ function App() {
     };
   const buttons = [
      '(',')','C','CE','+', '-', '×', '/', '1', '2', '3', '^', '4', '5',
-    '6', '√', '7', '8', '9', 'sin', '0', 'cos', 'tg', 'ctg' 
+    '6', 'sqrt', '7', '8', '9', 'sin', '0', 'cos', 'tan', 'ctan' 
   ];
 
   return (
